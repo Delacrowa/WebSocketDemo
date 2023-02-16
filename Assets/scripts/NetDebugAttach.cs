@@ -1,17 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
-public class NetDebugAttach : MonoBehaviour {
-    Text myText;
-	// Use this for initialization
-	void Awake () {
-        myText = GetComponent<Text>();
-	}
+public class NetDebugAttach : MonoBehaviour
+{
+    private Text myText;
 
-    void Update()
+    // Use this for initialization
+    private void Awake()
+    {
+        myText = GetComponent<Text>();
+    }
+
+    private void Update()
     {
         myText.text = NetDebug.getText();
     }

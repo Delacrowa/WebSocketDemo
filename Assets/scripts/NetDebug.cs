@@ -1,28 +1,23 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public static class NetDebug
 {
-    static int debugLevel = 7;//higher the level, the less that gets printed. 0-7. 7 is for player ready version
-
-    static string textSaved = "";
-    static int netLinesMax = 10;
-    static string netDebug
+    private static string netDebug
     {
         get
         {
-            string textToPrint = textSaved;
-            int netDebugLines = textToPrint.Split('\n').Length;
+            var textToPrint = textSaved;
+            var netDebugLines = textToPrint.Split('\n').Length;
             if (netDebugLines > netLinesMax)
             {
-                string[] statements = textToPrint.Split('\n');
+                var statements = textToPrint.Split('\n');
                 //print("statementsL = " + statements.Length);
                 textToPrint = "";
-                for (int i = statements.Length-netLinesMax; i < statements.Length; i++)
+                for (var i = statements.Length - netLinesMax; i < statements.Length; i++)
                 {
-                    string end = "\n";
+                    var end = "\n";
                     if (i == statements.Length - 1)
                     {
                         end = "";
@@ -32,27 +27,35 @@ public static class NetDebug
             }
             return textToPrint;
         }
-
-        set
-        {
-            textSaved = value;
-        }
-
+        set => textSaved = value;
     }
 
-    public static string getText()
+    private static readonly int
+        debugLevel = 7; //higher the level, the less that gets printed. 0-7. 7 is for player ready version
+    private static readonly int netLinesMax = 10;
+    private static readonly List<string> usedDebugStrings = new();
+    private static string textSaved = "";
+
+    public static string getText() =>
+        netDebug;
+
+    public static void printBoth(string str, int level)
     {
-        return netDebug;
+        if (level >= debugLevel)
+        {
+            printDebug(str, level);
+            Debug.Log(str + " " + DateTime.Now.ToString("h:mm:ss tt"));
+        }
     }
 
-    public static string printDictionaryKeys<T1,T2>(Dictionary<T1,T2> cb)
+    public static void printBoth(string str)
     {
-        string keys = "";
-        foreach (T1 k in cb.Keys)
+        var level = debugLevel;
+        if (level >= debugLevel)
         {
-            keys = keys + " " + k;
+            printDebug(str, level);
+            Debug.Log(str + " " + DateTime.Now.ToString("h:mm:ss tt"));
         }
-        return keys;
     }
 
     //public static void setDebugText(Text inText)
@@ -63,13 +66,23 @@ public static class NetDebug
     public static void printDebug(string statement, int level)
     {
         if (level >= debugLevel)
+        {
             textSaved = textSaved + "\n" + statement;
+        }
     }
 
-    static List<string> usedDebugStrings = new List<string>();
+    public static string printDictionaryKeys<T1, T2>(Dictionary<T1, T2> cb)
+    {
+        var keys = "";
+        foreach (var k in cb.Keys)
+        {
+            keys = keys + " " + k;
+        }
+        return keys;
+    }
 
     /// <summary>
-    /// Checks if already printed statementPrefix, then won't print again
+    ///     Checks if already printed statementPrefix, then won't print again
     /// </summary>
     /// <param name="statementPreFix"></param>
     /// <param name="statementSuffix"></param>
@@ -77,27 +90,8 @@ public static class NetDebug
     {
         if (!usedDebugStrings.Contains(statementPreFix))
         {
-            printDebug(statementPreFix + statementSuffix,7);
+            printDebug(statementPreFix + statementSuffix, 7);
             usedDebugStrings.Add(statementPreFix);
-        }
-    }
-
-    public static void printBoth(string str, int level)
-    {
-        if (level >= debugLevel)
-        {
-            printDebug(str,level);
-            Debug.Log(str + " " + System.DateTime.Now.ToString("h:mm:ss tt"));
-        }
-    }
-
-    public static void printBoth(string str)
-    {
-        int level = debugLevel;
-        if (level >= debugLevel)
-        {
-            printDebug(str, level);
-            Debug.Log(str + " " + System.DateTime.Now.ToString("h:mm:ss tt"));
         }
     }
 }
